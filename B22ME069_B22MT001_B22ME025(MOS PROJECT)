@@ -1,0 +1,52 @@
+import matplotlib.pyplot as plt
+import numpy as np
+
+def calculate_sfd_bmd(beam_length, udl_length, udl_intensity):
+    R1 = R2 = (udl_length * udl_intensity) / 2
+
+    # Define the distances and points along the beam
+    x = np.linspace(0, beam_length, 1000)
+    v = np.zeros_like(x)
+    m = np.zeros_like(x)
+
+   #calculations
+    for i in range(len(x)):
+        if x[i] <= udl_length:
+            v[i] = R1 - udl_intensity * x[i]
+            m[i] = R1 * x[i] - 0.5 * udl_intensity * x[i]**2
+        else:
+            v[i] = R1 - R2
+            m[i] = R1 * x[i] - 0.5 * udl_intensity * udl_length**2 - R2 * (x[i] - udl_length)
+
+    return x, v, m
+
+def plot_diagrams(x, v, m):
+    plt.subplot(2, 1, 1)
+    plt.plot(x, v, color='b', label='Shear Force')
+    plt.axhline(0, color='k', linestyle='--', linewidth=1)
+    plt.title('Shear Force Diagram')
+    plt.xlabel('Distance (m)')
+    plt.ylabel('Shear Force (N)')
+    plt.legend()
+    plt.grid(True)
+
+    plt.subplot(2, 1, 2)
+    plt.plot(x, m, color='r', label='Bending Moment')
+    plt.axhline(0, color='k', linestyle='--', linewidth=1)
+    plt.title('Bending Moment Diagram')
+    plt.xlabel('Distance (m)')
+    plt.ylabel('Bending Moment (Nm)')
+    plt.legend()
+    plt.grid(True)
+
+    plt.tight_layout()
+    plt.show()
+
+beam_length = 2.5  # Length of the beam
+udl_length = 2.5  # Length of the UDL
+udl_intensity = 60.0  # Intensity of the UDL in kN/m
+udl_intensity *= 1000
+
+# Calculate and plot diagrams
+x, v, m = calculate_sfd_bmd(beam_length, udl_length, udl_intensity)
+plot_diagrams(x, v, m)
